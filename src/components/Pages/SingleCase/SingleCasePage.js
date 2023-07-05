@@ -3,6 +3,7 @@ import { useSelector, useDispatch } from 'react-redux';
 import { useParams } from 'react-router-dom';
 import { fetchSingleCase } from '../../../store/singleCaseSlice';
 import { updateCase } from '../../../store/editCaseSlice';
+import { fetchOfficers } from '../../../store/officersSlice';
 import { Container, Button } from 'react-bootstrap';
 
 const SingleCasePage = () => {
@@ -14,14 +15,23 @@ const SingleCasePage = () => {
 
   const [isEditing, setIsEditing] = useState(false);
   const [editedData, setEditedData] = useState({});
+  const [status, setStatus] = useState(caseData ? caseData.status : 'new');
+  const [clientId, setClientId] = useState(caseData ? caseData.clientId : '');
 
   useEffect(() => {
     dispatch(fetchSingleCase(id));
+    dispatch(fetchOfficers());
   }, [dispatch, id]);
+
+  useEffect(() => {
+    setEditedData(caseData);
+    setClientId(caseData ? caseData.clientId : '');
+  }, [caseData]);
 
   const handleEditClick = () => {
     setIsEditing(true);
     setEditedData(caseData);
+    setClientId(caseData ? caseData.clientId : '');
   };
 
   const handleInputChange = (e) => {
@@ -32,10 +42,29 @@ const SingleCasePage = () => {
     }));
   };
 
+  const handleStatusChange = (e) => {
+    setStatus(e.target.value);
+  };
+
+  const handleClientIdChange = (e) => {
+    setClientId(e.target.value);
+  };
+
   const handleSaveClick = () => {
-    const caseId = caseData.id;
-    dispatch(updateCase({ id: caseId, updatedData: editedData }));
+    if (editedData.status === 'done' && !editedData.resolution) {
+      alert('Пожалуйста, заполните поле "Завершающий комментарий".');
+      return;
+    }
+
+    dispatch(
+      updateCase({
+        ...editedData,
+        status: status,
+        clientId: clientId,
+      })
+    );
     setIsEditing(false);
+    setEditedData(editedData);
   };
 
   return (
@@ -46,9 +75,25 @@ const SingleCasePage = () => {
         ) : (
           <div className="">
             <h1 className="mb-4">Детальная информация о краже</h1>
-            {caseData && (
+            {editedData && (
               <div className="d-flex flex-column align-items-center justify-content-center">
                 <div className="card p-3 d-inline-block">
+                  <h3 className="mb-3">
+                    <strong>Статус сообщения:</strong>{' '}
+                    {isEditing ? (
+                      <select
+                        name="status"
+                        value={status}
+                        onChange={handleStatusChange}
+                      >
+                        <option value="new">Новый</option>
+                        <option value="in_progress">В процессе</option>
+                        <option value="done">Завершен</option>
+                      </select>
+                    ) : (
+                      status
+                    )}
+                  </h3>
                   <h3 className="mb-3">
                     <strong>Лицензия:</strong>{' '}
                     {isEditing ? (
@@ -59,7 +104,7 @@ const SingleCasePage = () => {
                         onChange={handleInputChange}
                       />
                     ) : (
-                      caseData.licenseNumber
+                      editedData.licenseNumber
                     )}
                   </h3>
                   <h3 className="mb-3">
@@ -72,7 +117,7 @@ const SingleCasePage = () => {
                       >
                         <option value="">Выберите сотрудника</option>
                         {officers
-                          .filter((officer) => officer.status === 'одобрен')
+                          .filter((officer) => officer.approved)
                           .map((officer) => (
                             <option key={officer._id} value={officer._id}>
                               {officer.firstName} {officer.lastName}
@@ -80,7 +125,7 @@ const SingleCasePage = () => {
                           ))}
                       </select>
                     ) : (
-                      caseData.officer
+                      editedData.officer
                     )}
                   </h3>
                   <h3 className="mb-3">
@@ -93,7 +138,7 @@ const SingleCasePage = () => {
                         onChange={handleInputChange}
                       />
                     ) : (
-                      caseData.ownerFullName
+                      editedData.ownerFullName
                     )}
                   </h3>
                   <h3 className="mb-3">
@@ -106,7 +151,7 @@ const SingleCasePage = () => {
                         onChange={handleInputChange}
                       />
                     ) : (
-                      caseData.date
+                      editedData.date
                     )}
                   </h3>
                   <h3 className="mb-3">
@@ -119,7 +164,7 @@ const SingleCasePage = () => {
                         onChange={handleInputChange}
                       />
                     ) : (
-                      caseData.type
+                      editedData.type
                     )}
                   </h3>
                   <h3 className="mb-3">
@@ -132,7 +177,7 @@ const SingleCasePage = () => {
                         onChange={handleInputChange}
                       />
                     ) : (
-                      caseData.color
+                      editedData.color
                     )}
                   </h3>
                   <h3 className="mb-3">
@@ -144,10 +189,10 @@ const SingleCasePage = () => {
                         onChange={handleInputChange}
                       />
                     ) : (
-                      caseData.description
+                      editedData.description
                     )}
                   </h3>
-                  {caseData.status === 'завершен' && (
+                  {editedData.status === 'done' && (
                     <h3 className="mb-3">
                       <strong>Завершающий комментарий:</strong>{' '}
                       {isEditing ? (
@@ -155,13 +200,35 @@ const SingleCasePage = () => {
                           value={editedData.resolution || ''}
                           name="resolution"
                           onChange={handleInputChange}
-                          required={caseData.status === 'завершен'}
+                          required={editedData.status === 'done'}
                         />
                       ) : (
-                        caseData.resolution
+                        editedData.resolution
                       )}
                     </h3>
                   )}
+                  <h3 className="mb-3">
+                    <strong>Дата создания сообщения:</strong>{' '}
+                    {editedData.createdAt ? (
+                      editedData.createdAt
+                    ) : (
+                      "Не указана"
+                    )}
+                  </h3>
+                  <h3 className="mb-3">
+                    <strong>Client ID:</strong>{' '}
+                    {isEditing ? (
+                      <input
+                        type="text"
+                        name="clientId"
+                        value={clientId || ''}
+                        onChange={handleClientIdChange}
+                        disabled
+                      />
+                    ) : (
+                      clientId
+                    )}
+                  </h3>
                   {isEditing ? (
                     <Button onClick={handleSaveClick}>Сохранить</Button>
                   ) : (

@@ -2,7 +2,7 @@ import React, { useState } from 'react';
 import { useSelector, useDispatch } from 'react-redux';
 import RegistrationForm from '../Pages/ModalPage/EditModalPage.js.js';
 import { logoutUser } from '../../store/authSlice';
-import { Link } from 'react-router-dom'; // Импортируем компонент Link для создания ссылки
+import { Link } from 'react-router-dom';
 import './Header.module.css';
 import Container from 'react-bootstrap/Container';
 import Row from 'react-bootstrap/Row';
@@ -26,22 +26,30 @@ const Header = () => {
 
   return (
     <div className='pt-3 border-bottom bg-white fixed-top'>
-      <Container>
+      <Container fluid='xl'>
         <Row>
-          <Col className='d-flex align-items-baseline'>
-          
-            <FontAwesomeIcon icon={faBicycle} size='2xl' className='me-2' />
-          <Link to='/' className='text-decoration-none text-dark'>
-            <h1>UrbanCycleRent</h1>
-          </Link>
-          </Col>
+          <div className='d-flex align-items-baseline col-md-6'>
+            <FontAwesomeIcon icon={faBicycle} size='2x' className='me-2' />
+            <Link to='/' className='text-decoration-none text-dark'>
+              <h1>UrbanCycleRent</h1>
+            </Link>
+          </div>
           <Col className='text-end'>
+            <div className="row">
             {isLoggedIn ? (
               <>
+              <div className="d-flex gap-3 flex-wrap align-items-end justify-content-end mb-2">
                 <Link to='/all-cases'>
-                  <Button variant='success'  className='me-2'>Все кражи</Button>
+                  <Button variant='success' className=''>Все кражи</Button>
                 </Link>
-                <Button variant='danger' onClick={handleLogout}>Выйти</Button>
+                <Link to='/all-officers'>
+                  <Button variant='success' className=''>Все сотрудники</Button>
+                </Link>
+                <Link to='/create-officer'>
+                  <Button variant='success' className=''>Создать сотрудника</Button>
+                </Link>
+                <Button variant='danger' className='' onClick={handleLogout}>Выйти</Button>
+                </div>
               </>
             ) : (
               <>
@@ -49,6 +57,7 @@ const Header = () => {
                 {isModalOpen && <RegistrationForm onClose={handleModalToggle} />}
               </>
             )}
+            </div>
           </Col>
         </Row>
       </Container>

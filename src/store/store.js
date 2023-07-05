@@ -4,7 +4,10 @@ import reportReducer from './reportSlice';
 import officersReducer from './officersSlice';
 import casesSlice from './allCasesSlice';
 import singleCaseReducer from './singleCaseSlice';
-import editCaseReducer from './editCaseSlice'
+import editCaseReducer from './editCaseSlice';
+import singleOfficerReducer from './singleOfficerSlice';
+import newOfficerReducer from './editCaseSlice'
+import editOfficerReducer from './updateOfficerSlice'
 
 const store = configureStore({
   reducer: {
@@ -14,6 +17,9 @@ const store = configureStore({
     allCases: casesSlice,
     singleCase: singleCaseReducer,
     editCase: editCaseReducer,
+    singleOfficer: singleOfficerReducer,
+    newOfficer: newOfficerReducer,
+    editOfficer: editOfficerReducer,
   },
 });
 

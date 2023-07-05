@@ -14,7 +14,7 @@ export const updateCase = createAsyncThunk('editCase/updateCase', async (data, t
       },
     };
 
-    const response = await axios.put(`https://sf-final-project-be.herokuapp.com/api/cases/${data.caseId}`, data.fields, config);
+    const response = await axios.put(`https://sf-final-project-be.herokuapp.com/api/cases/${data._id}`, data, config);
     return response.data.case;
   } catch (error) {
     throw error.response.data;
@@ -22,7 +22,6 @@ export const updateCase = createAsyncThunk('editCase/updateCase', async (data, t
 
 });
 
-console.log(updateCase)
 
 const editCaseSlice = createSlice({
   name: 'editCase',
