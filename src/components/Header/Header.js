@@ -53,8 +53,10 @@ const Header = () => {
               </>
             ) : (
               <>
-                <Button variant='success' onClick={handleModalToggle}>Вход/Регистрация</Button>
+              <div className="">
+                <Button className='px-4 button-reg' variant='success' onClick={handleModalToggle}>Вход/Регистрация</Button>
                 {isModalOpen && <RegistrationForm onClose={handleModalToggle} />}
+              </div>
               </>
             )}
             </div>
