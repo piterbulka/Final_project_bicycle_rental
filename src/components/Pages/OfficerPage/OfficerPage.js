@@ -104,13 +104,14 @@ const OfficerDetailsPage = () => {
             <Form.Control type="email" value={officer.email} disabled />
           </Form.Group>
           <Form.Group controlId="formPassword">
-          <Form.Label>Пароль:</Form.Label>
+          <Form.Label>Пароль: * </Form.Label>
           {isEditing ? (
             <Form.Control
               type="password"
               value={password}
               onChange={handlePasswordChange} // Изменение обработчика события
               autoComplete="current-password"
+              required
             />
           ) : (
             <Form.Control type="password" value={password} readOnly />
